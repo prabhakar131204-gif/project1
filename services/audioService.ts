@@ -4,13 +4,24 @@ class AudioService {
 
   private init() {
     if (!this.audioContext) {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      try {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          this.audioContext = new AudioContextClass();
+        }
+      } catch (e) {
+        console.warn("AudioContext not supported");
+      }
+    }
+    
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
     }
   }
 
   public playDiceRoll() {
     this.init();
-    if (!this.audioContext) return;
+    if (!this.audioContext || this.audioContext.state !== 'running') return;
 
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
@@ -31,7 +42,7 @@ class AudioService {
 
   public playMove() {
     this.init();
-    if (!this.audioContext) return;
+    if (!this.audioContext || this.audioContext.state !== 'running') return;
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
     oscillator.type = 'sine';
@@ -47,7 +58,7 @@ class AudioService {
 
   public playSpecial(isSnake: boolean) {
     this.init();
-    if (!this.audioContext) return;
+    if (!this.audioContext || this.audioContext.state !== 'running') return;
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
     oscillator.type = isSnake ? 'sawtooth' : 'triangle';
