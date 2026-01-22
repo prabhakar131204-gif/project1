@@ -1,0 +1,7 @@
+{
+  "name": "Mythic Snakes & Ladders",
+  "description": "A visually stunning, multi-themed Snake and Ladder game for 2-4 players with animated movement, high-fidelity graphics, and immersive sound effects.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
