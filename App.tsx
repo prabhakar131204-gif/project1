@@ -5,7 +5,7 @@ import { THEMES, STANDARD_BOARD, PLAYER_COLORS, PLAYER_AVATARS } from './constan
 import Board from './components/Board';
 import Dice from './components/Dice';
 import { audioService } from './services/audioService';
-import { ChevronLeft, Trophy, Users, Shield, Sword, Gamepad2 } from 'lucide-react';
+import { ChevronLeft, Trophy, Users, Gamepad2 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>('LOBBY');
@@ -14,7 +14,7 @@ const App: React.FC = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [diceValue, setDiceValue] = useState(1);
   const [isRolling, setIsRolling] = useState(false);
-  const [lastMoveMsg, setLastMoveMsg] = useState('');
+  const [lastMoveMsg, setLastMoveMsg] = useState('Welcome, adventurer!');
   const [winner, setWinner] = useState<Player | null>(null);
 
   const config = THEMES[theme];
@@ -31,7 +31,7 @@ const App: React.FC = () => {
     setGameState('PLAYING');
     setCurrentPlayerIndex(0);
     setWinner(null);
-    setLastMoveMsg('Welcome to the board! Rolling for starting luck...');
+    setLastMoveMsg('The race begins! Roll the dice to start your journey.');
   };
 
   const handleRoll = async () => {
@@ -40,7 +40,7 @@ const App: React.FC = () => {
     setIsRolling(true);
     audioService.playDiceRoll();
 
-    // Dice animation duration (matches CSS transition)
+    // Dice animation duration
     await new Promise(resolve => setTimeout(resolve, 1200));
 
     const roll = Math.floor(Math.random() * 6) + 1;
@@ -71,8 +71,8 @@ const App: React.FC = () => {
         newPos = special.end;
         const isSnake = special.type === 'SNAKE';
         setLastMoveMsg(isSnake 
-          ? `Ouch! A snake slithered ${currentPlayer.name} back!` 
-          : `Luck! ${currentPlayer.name} discovered a shortcut!`
+          ? `Ouch! A snake slithered ${currentPlayer.name} back to ${newPos}!` 
+          : `Luck! ${currentPlayer.name} discovered a ladder to ${newPos}!`
         );
         audioService.playSpecial(isSnake);
       }
@@ -98,24 +98,26 @@ const App: React.FC = () => {
 
   if (gameState === 'LOBBY') {
     return (
-      <div className="min-h-screen bg-pattern relative overflow-hidden flex flex-col items-center justify-center p-6">
-        <div className="absolute top-20 left-10 text-9xl opacity-30 floating">🐍</div>
-        <div className="absolute bottom-40 right-10 text-9xl opacity-30 floating" style={{ animationDelay: '2s' }}>🪜</div>
-        <div className="absolute top-1/2 left-1/4 text-6xl opacity-10 floating" style={{ animationDelay: '1s' }}><Gamepad2 className="w-24 h-24" /></div>
+      <div className="min-h-screen bg-pattern relative overflow-hidden flex flex-col items-center justify-center p-6 bg-[#020617]">
+        {/* Background Elements */}
+        <div className="absolute top-20 left-10 text-9xl opacity-20 floating select-none pointer-events-none">🐍</div>
+        <div className="absolute bottom-40 right-10 text-9xl opacity-20 floating select-none pointer-events-none" style={{ animationDelay: '2s' }}>🪜</div>
+        <div className="absolute top-1/2 left-1/4 text-6xl opacity-10 floating select-none pointer-events-none" style={{ animationDelay: '1s' }}><Gamepad2 className="w-24 h-24" /></div>
 
         <div className="z-10 max-w-5xl w-full flex flex-col items-center">
           <header className="mb-16 text-center">
-            <h1 className="game-title text-7xl md:text-9xl font-black mb-4 select-none">MYTHIC</h1>
-            <h2 className="text-xl md:text-2xl font-black text-amber-500 tracking-[0.6em] uppercase drop-shadow-md">
+            <h1 className="game-title text-7xl md:text-9xl font-black mb-4 select-none tracking-tight">MYTHIC</h1>
+            <h2 className="text-xl md:text-2xl font-black text-amber-500 tracking-[0.6em] uppercase drop-shadow-lg font-cinzel">
               Snakes & Ladders
             </h2>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 w-full items-start">
+            {/* Theme Selection */}
             <div className="glass-card rounded-[3rem] p-10 space-y-8">
               <div className="flex items-center gap-4 border-b border-white/10 pb-4">
                  <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
-                 <h3 className="text-white text-xl font-black uppercase tracking-widest font-cinzel">Select Realm</h3>
+                 <h3 className="text-white text-xl font-black uppercase tracking-widest font-cinzel">Select Your Realm</h3>
               </div>
               <div className="grid grid-cols-2 gap-6">
                 {Object.values(GameTheme).map((t) => (
@@ -137,11 +139,12 @@ const App: React.FC = () => {
               </div>
             </div>
 
+            {/* Multiplayer Selection */}
             <div className="glass-card rounded-[3rem] p-10 flex flex-col items-center gap-8 shadow-2xl">
               <div className="text-center">
-                <Users className="w-10 h-10 text-amber-500 mx-auto mb-4" />
+                <Users className="w-12 h-12 text-amber-500 mx-auto mb-4" />
                 <h3 className="text-amber-500 text-sm font-black uppercase tracking-[0.3em] mb-2 font-cinzel">Join Quest</h3>
-                <p className="text-white/60 text-xs font-bold px-4">Gather 2 to 4 adventurers for the race!</p>
+                <p className="text-white/60 text-xs font-bold px-4">Minimum 2 players required for the journey.</p>
               </div>
               
               <div className="flex flex-col gap-4 w-full">
@@ -173,12 +176,12 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen ${config.bg} flex flex-col items-center justify-start p-4 md:p-8 transition-all duration-1000 bg-pattern`}>
-      <header className="w-full max-w-5xl flex justify-between items-center mb-8">
+      <header className="w-full max-w-5xl flex justify-between items-center mb-8 bg-black/20 backdrop-blur-xl p-6 rounded-[2rem] border border-white/5">
         <button 
           onClick={() => setGameState('LOBBY')}
-          className="px-6 py-3 bg-white/5 backdrop-blur-xl text-white/50 rounded-2xl hover:text-white hover:bg-white/10 transition-all text-[11px] font-black uppercase tracking-widest border border-white/10 shadow-lg flex items-center gap-2"
+          className="px-6 py-3 bg-white/5 text-white/50 rounded-2xl hover:text-white hover:bg-white/10 transition-all text-[11px] font-black uppercase tracking-widest border border-white/10 shadow-lg flex items-center gap-2"
         >
-          <ChevronLeft className="w-4 h-4" /> Quit Quest
+          <ChevronLeft className="w-4 h-4" /> Lobby
         </button>
         <div className="text-center">
           <h1 className="game-title text-4xl md:text-5xl font-black select-none tracking-tighter">MYTHIC</h1>
@@ -206,12 +209,13 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-8 w-full sticky top-8">
+          {/* Active Player */}
           <div className="glass-card rounded-[3rem] p-10 relative overflow-hidden">
              <div 
               className="absolute -top-20 -right-20 w-64 h-64 blur-[120px] opacity-40 transition-all duration-1000"
               style={{ backgroundColor: players[currentPlayerIndex]?.color }}
              />
-             <h3 className="text-white/30 text-[10px] font-black uppercase mb-8 tracking-[0.3em] font-cinzel">Active Hero</h3>
+             <h3 className="text-white/30 text-[10px] font-black uppercase mb-8 tracking-[0.3em] font-cinzel">Current Hero</h3>
              <div className="flex items-center gap-8">
                 <div 
                   className="w-24 h-24 rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl border-4 border-white/20 transform transition-all duration-700 hover:rotate-12 hover:scale-110"
@@ -228,6 +232,7 @@ const App: React.FC = () => {
              </div>
           </div>
 
+          {/* Dice Area */}
           <div className="glass-card rounded-[3rem] p-12 flex flex-col items-center justify-center shadow-2xl border-2 border-white/10">
             <Dice 
               value={diceValue} 
@@ -237,7 +242,9 @@ const App: React.FC = () => {
             />
           </div>
 
+          {/* Leaderboard */}
           <div className="bg-black/40 backdrop-blur rounded-[3rem] p-8 border border-white/5">
+            <h3 className="text-white/20 text-[10px] font-black uppercase mb-6 tracking-widest font-cinzel">Standings</h3>
             <div className="space-y-4">
               {players.map((p, idx) => (
                 <div 
@@ -261,11 +268,12 @@ const App: React.FC = () => {
         </div>
       </main>
 
+      {/* Winner Modal */}
       {gameState === 'WINNER' && winner && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-3xl p-6">
           <div className="relative glass-card border-4 border-amber-500 rounded-[5rem] p-20 max-w-xl w-full text-center shadow-[0_0_150px_rgba(245,158,11,0.5)]">
             <Trophy className="w-32 h-32 text-amber-500 mx-auto mb-10" />
-            <h1 className="game-title text-7xl font-black mb-6 italic font-cinzel">VICTORIOUS!</h1>
+            <h1 className="game-title text-7xl font-black mb-6 italic font-cinzel leading-none">VICTORIOUS!</h1>
             <p className="text-white text-3xl font-black tracking-widest uppercase mb-10 font-cinzel">{winner.name}</p>
             <button
               onClick={() => setGameState('LOBBY')}

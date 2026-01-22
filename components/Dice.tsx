@@ -9,25 +9,35 @@ interface DiceProps {
 }
 
 const Dice: React.FC<DiceProps> = ({ value, isRolling, onRoll, disabled }) => {
-  const dots = {
-    1: [<div key="1" className="dot self-center m-auto" />],
-    2: [<div key="1" className="dot" />, <div key="2" className="dot self-end ml-auto" />],
-    3: [<div key="1" className="dot" />, <div key="2" className="dot self-center m-auto" />, <div key="3" className="dot self-end ml-auto" />],
-    4: [<div key="1" className="dot" />, <div key="2" className="dot" />, <div key="3" className="dot mt-auto" />, <div key="4" className="dot mt-auto" />],
-    5: [<div key="1" className="dot" />, <div key="2" className="dot" />, <div key="3" className="dot m-auto" />, <div key="4" className="dot mt-auto" />, <div key="5" className="dot mt-auto" />],
-    6: [<div key="1" className="dot" />, <div key="2" className="dot" />, <div key="3" className="dot my-auto" />, <div key="4" className="dot my-auto" />, <div key="5" className="dot mt-auto" />, <div key="6" className="dot mt-auto" />],
+  const renderDots = (num: number) => {
+    switch (num) {
+      case 1:
+        return <div className="dot self-center m-auto" />;
+      case 2:
+        return <><div className="dot" /><div className="dot self-end ml-auto" /></>;
+      case 3:
+        return <><div className="dot" /><div className="dot self-center m-auto" /><div className="dot self-end ml-auto" /></>;
+      case 4:
+        return <><div className="dot" /><div className="dot" /><div className="dot mt-auto" /><div className="dot mt-auto" /></>;
+      case 5:
+        return <><div className="dot" /><div className="dot" /><div className="dot m-auto" /><div className="dot mt-auto" /><div className="dot mt-auto" /></>;
+      case 6:
+        return <><div className="dot" /><div className="dot" /><div className="dot my-auto" /><div className="dot my-auto" /><div className="dot mt-auto" /><div className="dot mt-auto" /></>;
+      default:
+        return null;
+    }
   };
 
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="scene" onClick={!disabled && !isRolling ? onRoll : undefined}>
         <div className={`cube ${isRolling ? 'is-rolling' : `show-${value}`}`}>
-          <div className="cube__face face-1 flex justify-center items-center">{dots[1]}</div>
-          <div className="cube__face face-2 grid grid-cols-2">{dots[2]}</div>
-          <div className="cube__face face-3 grid grid-cols-2">{dots[3]}</div>
-          <div className="cube__face face-4 grid grid-cols-2">{dots[4]}</div>
-          <div className="cube__face face-5 grid grid-cols-2">{dots[5]}</div>
-          <div className="cube__face face-6 grid grid-cols-2">{dots[6]}</div>
+          <div className="cube__face face-1 flex justify-center items-center">{renderDots(1)}</div>
+          <div className="cube__face face-2 grid grid-cols-2">{renderDots(2)}</div>
+          <div className="cube__face face-3 grid grid-cols-2">{renderDots(3)}</div>
+          <div className="cube__face face-4 grid grid-cols-2">{renderDots(4)}</div>
+          <div className="cube__face face-5 grid grid-cols-2">{renderDots(5)}</div>
+          <div className="cube__face face-6 grid grid-cols-2">{renderDots(6)}</div>
         </div>
       </div>
       <button
